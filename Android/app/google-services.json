@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1058155430593",
+    "project_id": "skip-fireside",
+    "storage_bucket": "skip-fireside.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1058155430593:android:5f7ddff1c7f4aa36370a40",
+        "android_client_info": {
+          "package_name": "skip.fireside.App"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDK7h8AEKjrzUOu1uOubqEoFbFPoDtI8PM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

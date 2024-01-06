@@ -1,0 +1,39 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Chat Key" : {
+
+    },
+    "Destination %lld" : {
+
+    },
+    "Home" : {
+
+    },
+    "Home %lld" : {
+
+    },
+    "Join Chat" : {
+
+    },
+    "Navigation" : {
+
+    },
+    "Navigation %lld" : {
+
+    },
+    "New Chat" : {
+
+    },
+    "Option" : {
+
+    },
+    "Settings" : {
+
+    },
+    "Welcome" : {
+
+    }
+  },
+  "version" : "1.0"
+}

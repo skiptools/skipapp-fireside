@@ -89,8 +89,10 @@ struct JoinChatView : View {
                 TextField(text: $chatKey) {
                     Text("Chat Key", bundle: .module)
                 }
+                #if !os(macOS)
                 .keyboardType(.decimalPad)
                 .textFieldStyle(.roundedBorder)
+                #endif
                 .padding()
             }
         }

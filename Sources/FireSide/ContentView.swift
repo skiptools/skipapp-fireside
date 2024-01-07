@@ -71,11 +71,7 @@ struct JoinChatView : View {
                     }
                 } label: {
                     ZStack {
-                        if chatKey.isEmpty {
-                            Text("New Chat", bundle: .module)
-                        } else {
-                            Text("Join Chat", bundle: .module)
-                        }
+                        chatKey.isEmpty ? Text("New Chat", bundle: .module) : Text("Join Chat", bundle: .module)
                     }
                     .font(.largeTitle)
                     .frame(width: 250.0, height: 180.0)
@@ -84,19 +80,24 @@ struct JoinChatView : View {
                 .disabled(chatKey.isEmpty == false && chatKey.count != 8)
 
 
+                Text(lastError ?? "")
+                    .foregroundStyle(Color.red)
+                    .opacity(lastError == nil ? 0.0 : 1.0)
+
                 Spacer()
 
                 TextField(text: $chatKey) {
                     Text("Chat Key", bundle: .module)
                 }
+
                 #if SKIP || os(iOS)
-                .keyboardType(.decimalPad)
+                .keyboardType(.numberPad)
                 .textFieldStyle(.roundedBorder)
                 #endif
                 .padding()
             }
         }
-        .frame(maxHeight: .infinity)
+        //.frame(maxHeight: .infinity)
     }
 
     private func joinChat() async {

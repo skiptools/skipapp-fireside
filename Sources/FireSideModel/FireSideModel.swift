@@ -21,8 +21,31 @@ public actor FireSideStore {
 
     public init(bundleURL: URL? = nil) throws {
         // TODO: use the bundleURL to load an offline bundle for testing
-        //let options = FirebaseOptions(googleAppID: "", gcmSenderID: "")
         FirebaseApp.configure()
+        self.firestore = Firestore.firestore()
+    }
+
+    /// Create a custom Firestore with the given name
+    public init(options: [String: String]) throws {
+        guard let appId = options["GOOGLE_APP_ID"],
+              let senderId = options["GCM_SENDER_ID"] else {
+            throw InvalidConfigurationError(errorDescription: "configuration options are missing required attributes")
+        }
+        let opts = FirebaseOptions(googleAppID: appId, gcmSenderID: senderId)
+        if let apiKey = options["API_KEY"] {
+            opts.apiKey = apiKey
+        }
+        if let projectID = options["PROJECT_ID"] {
+            opts.projectID = projectID
+        }
+        if let storageBucket = options["STORAGE_BUCKET"] {
+            opts.storageBucket = storageBucket
+        }
+//        if let bundleID = options["BUNDLE_ID"] {
+//            opts.bundleID = bundleID
+//        }
+
+        FirebaseApp.configure(options: opts)
         self.firestore = Firestore.firestore()
     }
 
@@ -39,7 +62,7 @@ public actor FireSideStore {
         let dbname = "(default)"
 
         let cref = firestore.collection("messages")
-
+//
         let snapshot = try await cref.getDocuments()
         for document in snapshot.documents {
             logger.log("read cref: \(document.documentID) => \(document.data())")
@@ -53,5 +76,9 @@ public actor FireSideStore {
             "t": Date.now.timeIntervalSince1970,
             "c": "message content"
         ])
+    }
+
+    public struct InvalidConfigurationError : LocalizedError {
+        public var errorDescription: String?
     }
 }

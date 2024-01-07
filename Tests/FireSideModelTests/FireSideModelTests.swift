@@ -7,17 +7,22 @@ let logger: Logger = Logger(subsystem: "FireSideModel", category: "Tests")
 
 @available(macOS 13, *)
 final class FireSideModelTests: XCTestCase {
-    func testFireSideModel() throws {
-        logger.log("running testFireSideModel")
-        XCTAssertEqual(1 + 2, 3, "basic test")
-        
-        // load the TestData.json file from the Resources folder and decode it into a struct
-        let resourceURL: URL = try XCTUnwrap(Bundle.module.url(forResource: "TestData", withExtension: "json"))
-        let testData = try JSONDecoder().decode(TestData.self, from: Data(contentsOf: resourceURL))
-        XCTAssertEqual("FireSideModel", testData.testModuleName)
-    }
-}
+    // values from Darwin/GoogleService-Info.plist
+    static let store = try! FireSideStore(options: [
+        "API_KEY": "AIzaSyCjhtnQ4GE010ED8hRMaGZjpdApSk43z1I",
+        "GCM_SENDER_ID": "1058155430593",
+        //"BUNDLE_ID": "skip.fireside.App",
+        "PROJECT_ID": "skip-fireside",
+        "STORAGE_BUCKET": "skip-fireside.appspot.com",
+        "GOOGLE_APP_ID": "1:1058155430593:ios:d3a7a76d92b20132370a40",
+    ])
 
-struct TestData : Codable, Hashable {
-    var testModuleName: String
+    func testFireSideStore() throws {
+        let _ = Self.store
+    }
+
+    func testFireSideModel() async throws {
+        let chatKey = try await Self.store.startNewChat()
+
+    }
 }

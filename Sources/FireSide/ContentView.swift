@@ -5,12 +5,13 @@ let fireSide = try! FireSideStore()
 
 public struct ContentView: View {
     @AppStorage("setting") var setting = true
+    @AppStorage("selectedTab") var selectedTab = 0
 
     public init() {
     }
 
     public var body: some View {
-        TabView() {
+        TabView(selection: $selectedTab) {
             JoinChatView()
                 .tag(0)
                 .tabItem { Label("Welcome", systemImage: "star") }
@@ -43,11 +44,13 @@ public struct ContentView: View {
                     .font(.largeTitle)
                 Toggle("Option", isOn: $setting)
             }
-            .tag(1)
+            .tag(2)
             .tabItem { Label("Settings", systemImage: "gearshape.fill") }
         }
     }
 }
+
+let chatKeyCount = 8
 
 struct JoinChatView : View {
     @AppStorage("chatKey") var chatKey: String = ""
@@ -77,7 +80,7 @@ struct JoinChatView : View {
                     .frame(width: 250.0, height: 180.0)
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(chatKey.isEmpty == false && chatKey.count != 8)
+                .disabled(chatKey.isEmpty == false && chatKey.count != chatKeyCount)
 
 
                 Text(lastError ?? "")
@@ -103,12 +106,15 @@ struct JoinChatView : View {
     private func joinChat() async {
         do {
             self.lastError = nil // clear the most recent error
-            if chatKey.count == 8 {
+            if chatKey.count == chatKeyCount {
+                logger.log("joinChat: \(chatKey)")
                 try await fireSide.joinChat(chatKey: chatKey)
             } else {
+                logger.log("startNewChat")
                 chatKey = try await fireSide.startNewChat()
             }
         } catch {
+            logger.log("joinChat error: \(error)")
             self.lastError = error.localizedDescription
         }
     }

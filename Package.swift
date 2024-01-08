@@ -9,7 +9,7 @@ import PackageDescription
 let package = Package(
     name: "skipapp-fireside",
     defaultLocalization: "en",
-    platforms: [.iOS(.v16), .macOS(.v13), .tvOS(.v16), .watchOS(.v9), .macCatalyst(.v16)],
+    platforms: [.iOS(.v17), .macOS(.v14), .tvOS(.v16), .watchOS(.v9), .macCatalyst(.v17)],
     products: [
         .library(name: "FireSideApp", type: .dynamic, targets: ["FireSide"]),
         .library(name: "FireSideModel", targets: ["FireSideModel"]),

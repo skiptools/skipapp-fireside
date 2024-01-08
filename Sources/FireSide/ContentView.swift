@@ -1,7 +1,7 @@
 import SwiftUI
 import FireSideModel
 
-let fireSide = try! FireSideStore()
+let firestore = try! FireSideStore()
 
 public struct ContentView: View {
     @AppStorage("setting") var setting = true
@@ -24,17 +24,7 @@ public struct ContentView: View {
                 }
 
             NavigationStack {
-                List {
-                    ForEach(1..<1_000) { i in
-                        NavigationLink("Home \(i)", value: i)
-                    }
-                }
-                .navigationTitle("Navigation")
-                .navigationDestination(for: Int.self) { i in
-                    Text("Destination \(i)")
-                        .font(.title)
-                        .navigationTitle("Navigation \(i)")
-                }
+                MessagesListView()
             }
             .tag(1)
             .tabItem { Label("Home", systemImage: "house.fill") }
@@ -47,6 +37,70 @@ public struct ContentView: View {
             .tag(2)
             .tabItem { Label("Settings", systemImage: "gearshape.fill") }
         }
+    }
+}
+
+struct MessagesListView : View {
+    @State var messageList: MessageList? = nil
+
+    var body: some View {
+        VStack {
+            List {
+                if let messageList = messageList {
+                    ForEach(messageList.messages) { m in
+                        NavigationLink(value: m) {
+                            HStack {
+                                Text(m.message)
+                                    .font(.title)
+                                Text(m.time.description)
+                                    .font(Font.callout)
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Navigation")
+            .navigationDestination(for: Message.self) { msg in
+                VStack {
+                    Text(msg.message)
+                        .font(.title)
+                        .navigationTitle("Message")
+                }
+            }
+
+            HStack {
+                ForEach(["♥️", "💙", "💜", "💛", "💚"], id: \.self) { emoji in
+                    Button(emoji) {
+                        Task.detached {
+                            let isJava = ProcessInfo.processInfo.environment["java.io.tmpdir"] != nil
+                            let msg = emoji + " from " + (isJava ? "Android" : "iOS")
+                            await sendMessage(msg)
+                        }
+                    }
+                    .buttonStyle(.bordered)
+                }
+            }
+            .padding()
+        }
+        .task {
+            do {
+                let messageList = try await firestore.watchMessageList()
+                self.messageList = messageList
+            } catch {
+                logger.error("error getting message list: \(error)")
+            }
+        }
+    }
+
+    func sendMessage(_ message: String) async {
+        logger.log("sendMessage: \(message)")
+        do {
+            let msg = try await firestore.sendMessage(message)
+            logger.error("sent message: \(msg)")
+        } catch {
+            logger.error("error sending message: \(error)")
+        }
+
     }
 }
 
@@ -108,10 +162,10 @@ struct JoinChatView : View {
             self.lastError = nil // clear the most recent error
             if chatKey.count == chatKeyCount {
                 logger.log("joinChat: \(chatKey)")
-                try await fireSide.joinChat(chatKey: chatKey)
+                try await firestore.joinChat(chatKey: chatKey)
             } else {
                 logger.log("startNewChat")
-                chatKey = try await fireSide.startNewChat()
+                chatKey = try await firestore.startNewChat()
             }
         } catch {
             logger.log("joinChat error: \(error)")
@@ -120,6 +174,10 @@ struct JoinChatView : View {
     }
 }
 
-#Preview {
-    ContentView()
-}
+//#Preview {
+//    if #available(iOS 17.0, *) {
+//        ContentView()
+//    } else {
+//        // Fallback on earlier versions
+//    }
+//}

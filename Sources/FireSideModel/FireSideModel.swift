@@ -55,7 +55,22 @@ public actor FireSideStore {
 
     @MainActor public func startNewChat() async throws -> String {
         logger.info("startNewChat")
-        return "12345678"
+
+        let cref = firestore.collection("messages")
+        let snapshot = try await cref.getDocuments()
+        logger.log("cref document: \(snapshot)")
+        for document in snapshot.documents {
+            logger.log("read cref: \(document.documentID) => \(document.data())")
+        }
+
+        let dref = try await cref.addDocument(data: [
+            "m": "some message",
+            "t": Date.now.timeIntervalSince1970,
+        ])
+
+        logger.log("created document: \(dref.documentID)")
+
+        return dref.documentID
     }
 
     @MainActor public func runTask() async throws {

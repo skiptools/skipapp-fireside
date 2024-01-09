@@ -14,7 +14,7 @@ public struct ContentView: View {
         TabView(selection: $selectedTab) {
             JoinChatView()
                 .tag(0)
-                .tabItem { Label("Welcome", systemImage: "star") }
+                .tabItem { Label("Join", systemImage: "star") }
                 .task {
                     //do {
                     //    try await fireSide.runTask()
@@ -27,7 +27,7 @@ public struct ContentView: View {
                 MessagesListView()
             }
             .tag(1)
-            .tabItem { Label("Home", systemImage: "house.fill") }
+            .tabItem { Label("Messages", systemImage: "list.bullet") }
 
             Form {
                 Text("Settings")
@@ -40,36 +40,78 @@ public struct ContentView: View {
     }
 }
 
+let fmt: DateFormatter = {
+    let f = DateFormatter()
+    f.dateStyle = .short
+    f.timeStyle = .short
+    return f
+}()
+
+let fmt2: DateFormatter = {
+    let f = DateFormatter()
+    f.dateStyle = .long
+    f.timeStyle = .long
+    return f
+}()
+
 struct MessagesListView : View {
     @State var messageList: MessageList? = nil
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0.0) {
             List {
                 if let messageList = messageList {
                     ForEach(messageList.messages) { m in
                         NavigationLink(value: m) {
                             HStack {
                                 Text(m.message)
-                                    .font(.title)
-                                Text(m.time.description)
+                                    .font(.title2)
+
+                                Text(fmt.string(from: m.time))
                                     .font(Font.callout)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
                             }
+                            .lineLimit(1)
+                        }
+                    }
+                    .onDelete { indices in
+                        Task.detached {
+                            await deleteMessages(indices)
                         }
                     }
                 }
             }
-            .navigationTitle("Navigation")
+            #if !SKIP
+            // the Observable is in FireSideModel, which doesn't know about SwiftUI and so cannot perform the update in a `withAnimation`
+            .animation(.default, value: messageList?.messages)
+            #endif
+            .navigationTitle("Messages: \(messageList?.messages.count ?? 0)")
             .navigationDestination(for: Message.self) { msg in
-                VStack {
-                    Text(msg.message)
-                        .font(.title)
-                        .navigationTitle("Message")
+                Form {
+                    HStack {
+                        Text("ID")
+                        Text(msg.id ?? "NO ID")
+                    }
+
+                    HStack {
+                        Text("Message")
+                        Text(msg.message)
+                    }
+
+                    HStack {
+                        Text("Date")
+                        Text(fmt2.string(from: msg.time))
+                            .font(Font.subheadline)
+                    }
+
                 }
+                .navigationTitle("Message")
             }
 
+            Divider()
+
             HStack {
-                ForEach(["♥️", "💙", "💜", "💛", "💚"], id: \.self) { emoji in
+                ForEach(["♥️", "💙", "💛", "💚"], id: \.self) { emoji in
                     Button(emoji) {
                         Task.detached {
                             let isJava = ProcessInfo.processInfo.environment["java.io.tmpdir"] != nil
@@ -77,6 +119,7 @@ struct MessagesListView : View {
                             await sendMessage(msg)
                         }
                     }
+                    .font(.largeTitle)
                     .buttonStyle(.bordered)
                 }
             }
@@ -99,6 +142,23 @@ struct MessagesListView : View {
             logger.error("sent message: \(msg)")
         } catch {
             logger.error("error sending message: \(error)")
+        }
+
+    }
+
+    func deleteMessages(_ indices: IndexSet) async {
+        logger.log("deleteMessages: \(indices)")
+        do {
+            if let messages = self.messageList?.messages {
+                let ids = indices.compactMap({ messages[$0].id })
+                self.messageList?.messages.removeAll(where: {
+                    ids.contains($0.id ?? "")
+                })
+                try await firestore.deleteMessages(ids)
+                logger.error("deleted ids: \(ids)")
+            }
+        } catch {
+            logger.error("error deleteMessages: \(error)")
         }
 
     }

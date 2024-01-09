@@ -10,7 +10,6 @@ import SkipFirebaseCore
 import SkipFirebaseFirestore
 #endif
 
-
 let logger: Logger = Logger(subsystem: "fire.side", category: "FireSideModel")
 
 public actor FireSideStore {
@@ -70,7 +69,6 @@ public actor FireSideStore {
             .documents {
             try await doc.reference.delete()
         }
-
     }
     
     @MainActor public func startNewChat() async throws -> String {

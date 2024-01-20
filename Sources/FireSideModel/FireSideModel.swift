@@ -143,7 +143,7 @@ public actor FireSideStore {
 
     fileprivate init(_ collection: CollectionReference) {
         let listener = collection.addSnapshotListener(includeMetadataChanges: true, listener: { [weak self] snap, err in
-            logger.log("snapshot: \(snap) error=\(err)")
+            //logger.log("snapshot: \(snap) error=\(err)")
             var msgs: [Message] = []
             if let snap = snap {
                 for doc in snap.documents {

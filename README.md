@@ -1,21 +1,40 @@
 # FireSide
 
 This is a [Skip](https://skip.tools) dual-platform app project.
-It builds a native app for both iOS and Android.
+It creates a native app for both iOS and Android.
 
-## Building
+This app shows Skip's integration with the Firebase backend cloud computing services
+using the official native Firebase SDKs for iOS and Android.
 
-This project is both a stand-alone Swift Package Manager module,
-as well as an Xcode project that builds and transpiles the project
-into a Kotlin Gradle project for Android using the Skip plugin.
+<video id="intro_video" style="width: 100%" controls autoplay>
+  <source style="width: 100;" src="https://assets.skip.tools/videos/SkipFirebaseExample.mov" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
-Building the module requires that Skip be installed using
-[Homebrew](https://brew.sh) with `brew install skiptools/skip/skip`.
 
-This will also install the necessary transpiler prerequisites:
-Kotlin, Gradle, and the Android build tools.
+## Quickstart
 
-Installation prerequisites can be confirmed by running `skip checkup`.
+This repository contains an Xcode project with a SwiftUI app that uses the
+Skip plugin to transpile the app into Kotlin then build and launch it on Android.
+To get started:
+
+1. Install skip (requires macOS 13+ with [Homebrew](https://brew.sh), [Xcode](https://developer.apple.com/xcode/), and [Android Studio](https://developer.android.com/studio)):
+```
+$ brew install skiptools/skip/skip
+```
+2. Configure and launch an Android emulator from the [Android Studio device manager](https://developer.android.com/studio/run/emulator-launch-without-app), or by launching a pre-existing emulator:
+```
+$ ~/Library/Android/sdk/emulator/emulator @Pixel_6_API_30
+```
+3. Download this [repository as a zip file](https://github.com/skiptools/skipapp-fireside/archive/main.zip) and unzip it, or clone the repository:
+```
+$ git clone https://github.com/skiptools/skipapp-fireside.git
+```
+4. Open the Xcode project in the *Darwin* folder:
+```
+$ open skipapp-fireside/Darwin/FireSide.xcodeproj
+```
+5. Select and Run the `FireSide` target with an iOS simulator destination; the app will build and run side-by-side on the iOS simulator and Android emulator.
 
 ## Testing
 

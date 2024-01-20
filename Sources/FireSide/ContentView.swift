@@ -54,6 +54,8 @@ let fmt2: DateFormatter = {
     return f
 }()
 
+let isAndroid = ProcessInfo.processInfo.environment["java.io.tmpdir"] != nil
+
 struct MessagesListView : View {
     @State var messageList: MessageList? = nil
 
@@ -114,8 +116,7 @@ struct MessagesListView : View {
                 ForEach(["♥️", "💙", "💛", "💚"], id: \.self) { emoji in
                     Button(emoji) {
                         Task.detached {
-                            let isJava = ProcessInfo.processInfo.environment["java.io.tmpdir"] != nil
-                            let msg = emoji + " from " + (isJava ? "Android" : "iOS")
+                            let msg = emoji + " from " + (isAndroid ? "Android" : "iOS")
                             await sendMessage(msg)
                         }
                     }

@@ -3,8 +3,12 @@
 This is a [Skip](https://skip.tools) dual-platform app project.
 It creates a native app for both iOS and Android.
 
-This app shows Skip's integration with the Firebase backend cloud computing services
+This app shows Skip's integration with the Firebase backend
+cloud computing services
 using the official native Firebase SDKs for iOS and Android.
+It utilizes the
+[Skip Firebase](https://github.com/skiptools/skip-firebase)
+framework.
 
 <video id="intro_video" style="width: 100%" controls autoplay>
   <source style="width: 100;" src="https://assets.skip.tools/videos/SkipFirebaseExample.mov" type="video/mp4">

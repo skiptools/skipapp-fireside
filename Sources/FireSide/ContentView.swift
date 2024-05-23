@@ -6,36 +6,54 @@ let firestore = try! FireSideStore()
 public struct ContentView: View {
     @AppStorage("setting") var setting = true
     @AppStorage("selectedTab") var selectedTab = 0
+    @State var messageList: MessageList? = nil
 
     public init() {
     }
 
     public var body: some View {
         TabView(selection: $selectedTab) {
+            NavigationStack {
+                VStack(spacing: 0.0) {
+                    MessagesListView(messageList: $messageList)
+                    Divider()
+                    SendMessageBar(messageList: $messageList)
+                }
+            }
+            .tag(0)
+            .tabItem { Label("Messages", systemImage: "list.bullet") }
+
+            /* WIP
             JoinChatView()
-                .tag(0)
+                .tag(2)
                 .tabItem { Label("Join", systemImage: "star") }
                 .task {
-                    //do {
-                    //    try await fireSide.runTask()
-                    //} catch {
-                    //    logger.error("error running fireSide task: \(error)")
-                    //}
+                    do {
+                        try await fireSide.runTask()
+                    } catch {
+                        logger.error("error running fireSide task: \(error)")
+                    }
                 }
-
-            NavigationStack {
-                MessagesListView()
-            }
-            .tag(1)
-            .tabItem { Label("Messages", systemImage: "list.bullet") }
+             */
 
             Form {
                 Text("Settings")
                     .font(.largeTitle)
                 Toggle("Option", isOn: $setting)
             }
-            .tag(2)
+            .tag(1)
             .tabItem { Label("Settings", systemImage: "gearshape.fill") }
+        }
+        .task {
+            do {
+                let messageList = try await firestore.watchMessageList()
+                self.messageList = messageList
+            } catch {
+                logger.error("error getting message list: \(error)")
+                #if SKIP
+                android.util.Log.e("skip.fireside.App", "firebase error getting message list", error as Throwable)
+                #endif
+            }
         }
     }
 }
@@ -56,8 +74,39 @@ let fmt2: DateFormatter = {
 
 let isAndroid = ProcessInfo.processInfo.environment["java.io.tmpdir"] != nil
 
+struct SendMessageBar : View {
+    @Binding var messageList: MessageList?
+
+    var body: some View {
+        HStack {
+            ForEach(["♥️", "💙", "💛", "💚"], id: \.self) { emoji in
+                Button(emoji) {
+                    Task.detached {
+                        let msg = emoji + " from " + (isAndroid ? "Android" : "iOS")
+                        await sendMessage(msg)
+                    }
+                }
+                .font(.largeTitle)
+                .buttonStyle(.bordered)
+            }
+        }
+        .padding()
+    }
+
+    func sendMessage(_ message: String) async {
+        logger.log("sendMessage: \(message)")
+        do {
+            let msg = try await firestore.sendMessage(message)
+            logger.error("sent message: \(msg)")
+        } catch {
+            logger.error("error sending message: \(error)")
+        }
+
+    }
+}
+
 struct MessagesListView : View {
-    @State var messageList: MessageList? = nil
+    @Binding var messageList: MessageList?
 
     var body: some View {
         VStack(spacing: 0.0) {
@@ -109,45 +158,7 @@ struct MessagesListView : View {
                 }
                 .navigationTitle("Message")
             }
-
-            Divider()
-
-            HStack {
-                ForEach(["♥️", "💙", "💛", "💚"], id: \.self) { emoji in
-                    Button(emoji) {
-                        Task.detached {
-                            let msg = emoji + " from " + (isAndroid ? "Android" : "iOS")
-                            await sendMessage(msg)
-                        }
-                    }
-                    .font(.largeTitle)
-                    .buttonStyle(.bordered)
-                }
-            }
-            .padding()
         }
-        .task {
-            do {
-                let messageList = try await firestore.watchMessageList()
-                self.messageList = messageList
-            } catch {
-                logger.error("error getting message list: \(error)")
-                #if SKIP
-                android.util.Log.e("skip.fireside.App", "firebase error getting message list", error as Throwable)
-                #endif
-            }
-        }
-    }
-
-    func sendMessage(_ message: String) async {
-        logger.log("sendMessage: \(message)")
-        do {
-            let msg = try await firestore.sendMessage(message)
-            logger.error("sent message: \(msg)")
-        } catch {
-            logger.error("error sending message: \(error)")
-        }
-
     }
 
     func deleteMessages(_ indices: IndexSet) async {

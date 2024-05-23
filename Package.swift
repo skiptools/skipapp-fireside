@@ -15,10 +15,10 @@ let package = Package(
         .library(name: "FireSideModel", targets: ["FireSideModel"]),
     ],
     dependencies: [
-        .package(url: "https://source.skip.tools/skip.git", from: "0.8.25"),
-        .package(url: "https://source.skip.tools/skip-ui.git", from: "0.5.19"),
-        .package(url: "https://source.skip.tools/skip-foundation.git", from: "0.5.14"),
-        .package(url: "https://source.skip.tools/skip-model.git", from: "0.5.4"),
+        .package(url: "https://source.skip.tools/skip.git", from: "0.8.45"),
+        .package(url: "https://source.skip.tools/skip-ui.git", from: "0.9.2"),
+        .package(url: "https://source.skip.tools/skip-foundation.git", from: "0.6.9"),
+        .package(url: "https://source.skip.tools/skip-model.git", from: "0.6.2"),
         .package(url: "https://source.skip.tools/skip-firebase.git", from: "0.1.0")
     ],
     targets: [

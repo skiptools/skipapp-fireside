@@ -132,6 +132,9 @@ struct MessagesListView : View {
                 self.messageList = messageList
             } catch {
                 logger.error("error getting message list: \(error)")
+                #if SKIP
+                android.util.Log.e("skip.fireside.App", "firebase error getting message list", error as Throwable)
+                #endif
             }
         }
     }

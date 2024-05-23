@@ -19,9 +19,11 @@ public actor FireSideStore {
     private let firestore: Firestore
 
     public init(bundleURL: URL? = nil) throws {
-        // TODO: use the bundleURL to load an offline bundle for testing
+        logger.log("invoking FirebaseApp.configure()")
         FirebaseApp.configure()
+        logger.log("done invoking FirebaseApp.configure()")
         self.firestore = Firestore.firestore()
+        logger.log("Firestore.firestore(): \(self.firestore)")
     }
 
     /// Create a custom Firestore with the given name

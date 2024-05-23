@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.android.application)
     id("skip-build-plugin")
+
+    // this plugin is needed in order to process the google-services.json file
     id("com.google.gms.google-services") version "4.4.1" apply true
 }
 

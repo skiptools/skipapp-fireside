@@ -23,7 +23,6 @@ public actor FireSideStore {
         FirebaseApp.configure()
         logger.log("done invoking FirebaseApp.configure()")
         self.firestore = Firestore.firestore()
-        logger.log("Firestore.firestore(): \(self.firestore)")
     }
 
     /// Create a custom Firestore with the given name

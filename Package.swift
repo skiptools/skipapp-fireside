@@ -12,14 +12,14 @@ let package = Package(
     platforms: [.iOS(.v17), .macOS(.v14), .tvOS(.v16), .watchOS(.v9), .macCatalyst(.v17)],
     products: [
         .library(name: "FireSideApp", type: .dynamic, targets: ["FireSide"]),
-        .library(name: "FireSideModel", targets: ["FireSideModel"]),
+        .library(name: "FireSideModel", type: .dynamic, targets: ["FireSideModel"]),
     ],
     dependencies: [
-        .package(url: "https://source.skip.tools/skip.git", from: "0.8.45"),
-        .package(url: "https://source.skip.tools/skip-ui.git", from: "0.9.2"),
-        .package(url: "https://source.skip.tools/skip-foundation.git", from: "0.6.9"),
-        .package(url: "https://source.skip.tools/skip-model.git", from: "0.6.2"),
-        .package(url: "https://source.skip.tools/skip-firebase.git", from: "0.1.0")
+        .package(url: "https://source.skip.tools/skip.git", from: "0.9.2"),
+        .package(url: "https://source.skip.tools/skip-ui.git", from: "0.10.0"),
+        .package(url: "https://source.skip.tools/skip-foundation.git", from: "0.7.0"),
+        .package(url: "https://source.skip.tools/skip-model.git", from: "0.8.0"),
+        .package(url: "https://source.skip.tools/skip-firebase.git", from: "0.1.1")
     ],
     targets: [
         .target(name: "FireSide", dependencies: [

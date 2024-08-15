@@ -1,3 +1,12 @@
+## 0.2.0
+
+Released 2024-08-15
+
+  - Update app project for Kotlin 2 integrated compose compiler
+  - Update gradle build to match kotlinOptions in new template
+  - Remove jvmToolchain to use latest toolchain
+  - Add fastlane configuration
+
 ## 0.1.0
 
 Released 2024-05-23

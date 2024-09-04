@@ -25,7 +25,10 @@ android {
     }
 
     defaultConfig {
-        minSdk = libs.versions.android.sdk.min.get().toInt()
+        // Update minSdk so that we can control the notification permission. Lower SDKs
+        // present the permission prompt automatically but only after receiving a notification
+        minSdk = 33 // libs.versions.android.sdk.min.get().toInt()
+        
         // skip.tools.skip-build-plugin will automatically use Skip.env properties for:
         // applicationId = PRODUCT_BUNDLE_IDENTIFIER
         // versionCode = CURRENT_PROJECT_VERSION

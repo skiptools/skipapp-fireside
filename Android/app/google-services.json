@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:1058155430593:android:57ec5900a43e5f2a370a40",
+        "android_client_info": {
+          "package_name": "org.appfair.app.FireSide"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDK7h8AEKjrzUOu1uOubqEoFbFPoDtI8PM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:1058155430593:android:5f7ddff1c7f4aa36370a40",
         "android_client_info": {
           "package_name": "skip.fireside.App"

@@ -9,8 +9,8 @@ let logger: Logger = Logger(subsystem: "FireSideModel", category: "Tests")
 @available(macOS 13, *)
 final class FireSideModelTests: XCTestCase {
     // values from Darwin/GoogleService-Info.plist
-    static let store: Result<FireSideStore, Error> = Result {
-        try FireSideStore(options: [
+    static let model: Result<FireSideModel, Error> = Result {
+        try FireSideModel(options: [
             "API_KEY": "AIzaSyCjhtnQ4GE010ED8hRMaGZjpdApSk43z1I",
             "GCM_SENDER_ID": "1058155430593",
             //"BUNDLE_ID": "skip.fireside.App",
@@ -20,12 +20,7 @@ final class FireSideModelTests: XCTestCase {
         ])
     }
 
-    func testFireSideStore() throws {
-        let _ = Self.store
-    }
-
-    func testFireSideModel() async throws {
-        let chatKey = try await Self.store.get().startNewChat()
-
+    func testFireSideModel() throws {
+        let _ = Self.model
     }
 }

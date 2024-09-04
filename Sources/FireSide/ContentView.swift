@@ -1,8 +1,6 @@
 import SwiftUI
 import FireSideModel
 
-let firestore = try! FireSideStore()
-
 public struct ContentView: View {
     @AppStorage("setting") var setting = true
     @AppStorage("selectedTab") var selectedTab = 0
@@ -23,49 +21,40 @@ public struct ContentView: View {
             .tag(0)
             .tabItem { Label("Messages", systemImage: "list.bullet") }
 
-            /* WIP
-            JoinChatView()
-                .tag(2)
-                .tabItem { Label("Join", systemImage: "star") }
-                .task {
-                    do {
-                        try await fireSide.runTask()
-                    } catch {
-                        logger.error("error running fireSide task: \(error)")
-                    }
+            NavigationStack {
+                Form {
+                    Toggle("Option", isOn: $setting)
                 }
-             */
-
-            Form {
-                Text("Settings")
-                    .font(.largeTitle)
-                Toggle("Option", isOn: $setting)
+                .navigationTitle("Settings")
             }
             .tag(1)
             .tabItem { Label("Settings", systemImage: "gearshape.fill") }
         }
         .task {
             do {
-                let messageList = try await firestore.watchMessageList()
+                let messageList = try await FireSideModel.shared.watchMessageList()
                 self.messageList = messageList
             } catch {
                 logger.error("error getting message list: \(error)")
-                #if SKIP
-                android.util.Log.e("skip.fireside.App", "firebase error getting message list", error as Throwable)
-                #endif
+            }
+        }
+        // Used when sending "deeplink" key in notifications: fireside://tab/<tab>
+        .onOpenURL { url in
+            if url.host() == "tab" {
+                selectedTab = url.path() == "/settings" ? 1 : 0
             }
         }
     }
 }
 
-let fmt: DateFormatter = {
+let shortFormat: DateFormatter = {
     let f = DateFormatter()
     f.dateStyle = .short
     f.timeStyle = .short
     return f
 }()
 
-let fmt2: DateFormatter = {
+let longFormat: DateFormatter = {
     let f = DateFormatter()
     f.dateStyle = .long
     f.timeStyle = .long
@@ -96,7 +85,7 @@ struct SendMessageBar : View {
     func sendMessage(_ message: String) async {
         logger.log("sendMessage: \(message)")
         do {
-            let msg = try await firestore.sendMessage(message)
+            let msg = try await FireSideModel.shared.sendMessage(message)
             logger.error("sent message: \(msg)")
         } catch {
             logger.error("error sending message: \(error)")
@@ -118,7 +107,7 @@ struct MessagesListView : View {
                                 Text(m.message)
                                     .font(.title2)
 
-                                Text(fmt.string(from: m.time))
+                                Text(shortFormat.string(from: m.time))
                                     .font(Font.callout)
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                             }
@@ -151,7 +140,7 @@ struct MessagesListView : View {
 
                     HStack {
                         Text("Date")
-                        Text(fmt2.string(from: msg.time))
+                        Text(longFormat.string(from: msg.time))
                             .font(Font.subheadline)
                     }
 
@@ -169,7 +158,7 @@ struct MessagesListView : View {
                 self.messageList?.messages.removeAll(where: {
                     ids.contains($0.id ?? "")
                 })
-                try await firestore.deleteMessages(ids)
+                try await FireSideModel.shared.deleteMessages(ids)
                 logger.error("deleted ids: \(ids)")
             }
         } catch {
@@ -185,15 +174,12 @@ struct JoinChatView : View {
     @AppStorage("chatKey") var chatKey: String = ""
     @State var lastError: String? = nil
 
-#if !SKIP
+    #if !SKIP
     @FocusState var keyFocused
-#endif
+    #endif
 
     var body: some View {
         ZStack {
-            //LinearGradient(colors: [Color.red, Color.clear], startPoint: UnitPoint(x: 0.0, y: 0.0), endPoint: UnitPoint(x: 0.0, y: 0.3))
-                //.frame(maxHeight: .infinity) // doesn't seem to work on Android
-
             VStack(alignment: .center) {
                 Spacer()
 
@@ -229,7 +215,6 @@ struct JoinChatView : View {
                 .padding()
             }
         }
-        //.frame(maxHeight: .infinity)
     }
 
     private func joinChat() async {
@@ -237,10 +222,10 @@ struct JoinChatView : View {
             self.lastError = nil // clear the most recent error
             if chatKey.count == chatKeyCount {
                 logger.log("joinChat: \(chatKey)")
-                try await firestore.joinChat(chatKey: chatKey)
+                try await FireSideModel.shared.joinChat(chatKey: chatKey)
             } else {
                 logger.log("startNewChat")
-                chatKey = try await firestore.startNewChat()
+                chatKey = try await FireSideModel.shared.startNewChat()
             }
         } catch {
             logger.log("joinChat error: \(error)")
@@ -248,11 +233,3 @@ struct JoinChatView : View {
         }
     }
 }
-
-//#Preview {
-//    if #available(iOS 17.0, *) {
-//        ContentView()
-//    } else {
-//        // Fallback on earlier versions
-//    }
-//}

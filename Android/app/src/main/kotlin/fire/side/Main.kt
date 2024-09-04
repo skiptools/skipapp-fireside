@@ -4,8 +4,9 @@ import skip.lib.*
 import skip.model.*
 import skip.foundation.*
 import skip.ui.*
+import skip.firebase.core.FirebaseApp
+import skip.firebase.messaging.Messaging
 
-import android.Manifest
 import android.app.Application
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
@@ -16,10 +17,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.core.app.ActivityCompat
 
 internal val logger: SkipLogger = SkipLogger(subsystem = "fire.side", category = "FireSide")
+internal val notificationsDelegate = NotificationDelegate() // Defined in FireSideApp.swift
 
 /// AndroidAppMain is the `android.app.Application` entry point, and must match `application android:name` in the AndroidMainfest.xml file.
 open class AndroidAppMain: Application {
@@ -30,6 +30,10 @@ open class AndroidAppMain: Application {
         super.onCreate()
         logger.info("starting app")
         ProcessInfo.launch(applicationContext)
+
+        FirebaseApp.configure()
+        UNUserNotificationCenter.current().delegate = notificationsDelegate
+        Messaging.messaging().delegate = notificationsDelegate
     }
 
     companion object {
@@ -43,6 +47,7 @@ open class MainActivity: AppCompatActivity {
 
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
         super.onCreate(savedInstanceState)
+        UIApplication.launch(this)
         enableEdgeToEdge()
 
         setContent {
@@ -51,6 +56,10 @@ open class MainActivity: AppCompatActivity {
                 PresentationRootView(ComposeContext())
             }
         }
+
+        Messaging.messaging().onActivityCreated(this)
+        // Ask for permissions at a time appropriate for your app
+        notificationsDelegate.requestPermission()
 
         // Example of requesting permissions on startup.
         // These must match the permissions in the AndroidManifest.xml file.
@@ -64,7 +73,9 @@ open class MainActivity: AppCompatActivity {
         //ActivityCompat.requestPermissions(self, permissions.toTypedArray(), requestTag)
     }
 
-    override fun onSaveInstanceState(bundle: android.os.Bundle): Unit = super.onSaveInstanceState(bundle)
+    override fun onSaveInstanceState(bundle: android.os.Bundle): Unit {
+        super.onSaveInstanceState(bundle)
+    }
 
     override fun onRestoreInstanceState(bundle: android.os.Bundle) {
         // Usually you restore your state in onCreate(). It is possible to restore it in onRestoreInstanceState() as well, but not very common. (onRestoreInstanceState() is called after onStart(), whereas onCreate() is called before onStart().

@@ -12,38 +12,16 @@ import SkipFirebaseFirestore
 
 let logger: Logger = Logger(subsystem: "fire.side", category: "FireSideModel")
 
-public actor FireSideStore {
+public actor FireSideModel {
     /// The global Firestore instance for the app, configured using the default
     /// `Android/app/google-services.json` and `Darwin/GoogleService-Info.plist` configuration files
     /// which can be downloaded for your project from https://console.firebase.google.com/project/
     private let firestore: Firestore
 
-    public init(bundleURL: URL? = nil) throws {
-        logger.log("invoking FirebaseApp.configure()")
-        FirebaseApp.configure()
-        logger.log("done invoking FirebaseApp.configure()")
-        self.firestore = Firestore.firestore()
-    }
+    /// Set the application's shared model to a configured instance before use.
+    public static var shared = try! FireSideModel()
 
-    /// Create a custom Firestore with the given name
-    public init(options: [String: String]) throws {
-        guard let appId = options["GOOGLE_APP_ID"],
-              let senderId = options["GCM_SENDER_ID"] else {
-            throw InvalidConfigurationError(errorDescription: "configuration options are missing required attributes")
-        }
-
-        let opts = FirebaseOptions(googleAppID: appId, gcmSenderID: senderId)
-        if let apiKey = options["API_KEY"] {
-            opts.apiKey = apiKey
-        }
-        if let projectID = options["PROJECT_ID"] {
-            opts.projectID = projectID
-        }
-        if let storageBucket = options["STORAGE_BUCKET"] {
-            opts.storageBucket = storageBucket
-        }
-
-        FirebaseApp.configure(options: opts)
+    public init() throws {
         self.firestore = Firestore.firestore()
     }
 
@@ -52,7 +30,7 @@ public actor FireSideStore {
     }
 
     @MainActor public func watchMessageList() async throws -> MessageList {
-        MessageList(firestore.collection("messages"))
+        return MessageList(firestore.collection("messages"))
     }
 
     /// "Sends" a message by adding it to the document
@@ -71,11 +49,11 @@ public actor FireSideStore {
             try await doc.reference.delete()
         }
     }
-    
+
     @MainActor public func startNewChat() async throws -> String {
         logger.info("startNewChat")
 
-        let cref = firestore.collection("messages")
+        //let cref = firestore.collection("messages")
         //let q = cref.whereField("t", isGreaterThan: 100.0).limit(to: 4)
 
         //let snapshot = try await cref.getDocuments()
@@ -117,79 +95,7 @@ public actor FireSideStore {
         return "ABCDEF"
     }
 
-    //@MainActor public func runTask() async throws {
-    //    //let dbname = "(default)"
-
-    //    let cref = firestore.collection("messages")
-    //    let snapshot = try await cref.getDocuments()
-    //    for document in snapshot.documents {
-    //        logger.log("read cref: \(document.documentID) => \(document.data())")
-    //    }
-
-    //    let id = UUID()
-    //    let bos = cref.document("msg-\(id.uuidString)")
-
-    //    try await bos.setData(Message(id: UUID(), message: "message", time: Date.now).data)
-    //}
-
     public struct InvalidConfigurationError : LocalizedError {
         public var errorDescription: String?
-    }
-}
-
-/// A live list of all the messages, updated using a Firestore snapshot listenr on the "messages" collection.
-@Observable public class MessageList {
-    private var listener: ListenerRegistration? = nil
-    public var messages: [Message] = []
-
-    fileprivate init(_ collection: CollectionReference) {
-        let listener = collection.addSnapshotListener(includeMetadataChanges: true, listener: { [weak self] snap, err in
-            //logger.log("snapshot: \(snap) error=\(err)")
-            var msgs: [Message] = []
-            if let snap = snap {
-                for doc in snap.documents {
-                    if let msg = Message.from(id: doc.documentID, data: doc.data()) {
-                        msgs.append(msg)
-                    } else {
-                        logger.warning("could not create message from data: \(doc.data())")
-                    }
-                }
-            }
-            msgs.sort {
-                $0.time > $1.time
-            }
-            
-            self?.messages = msgs
-        })
-
-        self.listener = listener
-    }
-}
-
-/// An individual message
-public struct Message: Hashable, Identifiable, Codable, CustomStringConvertible {
-    public let id: String?
-    public var message: String
-    public var time: Date
-
-    public var description: String {
-        return "Message: id=\(id ?? "NONE") message=\(message) time=\(time.timeIntervalSince1970)"
-    }
-
-    static func from(id: String, data: [String: Any]) -> Message? {
-        guard let message = data["m"] as? String else {
-            return nil
-        }
-        guard let time = data["t"] as? TimeInterval else {
-            return nil
-        }
-        return Message(id: id, message: message, time: Date(timeIntervalSince1970: time))
-    }
-
-    var data: [String: Any] {
-        [
-            "m": message,
-            "t": time.timeIntervalSince1970,
-        ]
     }
 }

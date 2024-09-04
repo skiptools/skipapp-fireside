@@ -1,6 +1,12 @@
+import FireSideModel
 import Foundation
 import OSLog
 import SwiftUI
+#if SKIP
+import SkipFirebaseMessaging
+#else
+import FirebaseMessaging
+#endif
 
 let logger: Logger = Logger(subsystem: "skip.fireside.App", category: "FireSide")
 
@@ -20,6 +26,48 @@ public struct RootView : View {
                 logger.log("Welcome to Skip on \(androidSDK != nil ? "Android" : "Darwin")!")
                 logger.warning("Skip app logs are viewable in the Xcode console for iOS; Android logs can be viewed in Studio or using adb logcat")
             }
+    }
+}
+
+/// Shared delegate for responding to notifications.
+///
+/// See FireSideAppMain for iOS setup, Main.kt for Android setup.
+public class NotificationDelegate : NSObject, UNUserNotificationCenterDelegate, MessagingDelegate {
+    public func requestPermission() {
+        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+        Task { @MainActor in
+            do {
+                if try await UNUserNotificationCenter.current().requestAuthorization(options: authOptions) {
+                    logger.info("notification permission granted")
+                } else {
+                    logger.info("notification permission denied")
+                }
+            } catch {
+                logger.error("notification permission error: \(error)")
+            }
+        }
+    }
+
+    @MainActor
+    public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
+        let content = notification.request.content
+        logger.info("willPresentNotification: \(content.title): \(content.body) \(content.userInfo)")
+        return [.banner, .sound]
+    }
+
+    @MainActor
+    public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+        let content = response.notification.request.content
+        logger.info("didReceiveNotification: \(content.title): \(content.body) \(content.userInfo)")
+
+        // Example of using a deep_link key passed in the notification to route to the app's `onOpenURL` handler
+        if let deepLink = response.notification.request.content.userInfo["deep_link"] as? String, let url = URL(string: deepLink) {
+            await UIApplication.shared.open(url)
+        }
+    }
+
+    public func messaging(_ messaging: Messaging, didReceiveRegistrationToken token: String?) {
+        logger.info("didReceiveRegistrationToken: \(token ?? "nil")")
     }
 }
 

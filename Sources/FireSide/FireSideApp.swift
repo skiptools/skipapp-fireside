@@ -59,11 +59,12 @@ public class NotificationDelegate : NSObject, UNUserNotificationCenterDelegate, 
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         let content = response.notification.request.content
         logger.info("didReceiveNotification: \(content.title): \(content.body) \(content.userInfo)")
-
+        #if SKIP || !os(macOS)
         // Example of using a deep_link key passed in the notification to route to the app's `onOpenURL` handler
         if let deepLink = response.notification.request.content.userInfo["deep_link"] as? String, let url = URL(string: deepLink) {
             await UIApplication.shared.open(url)
         }
+        #endif
     }
 
     public func messaging(_ messaging: Messaging, didReceiveRegistrationToken token: String?) {

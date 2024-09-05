@@ -24,6 +24,7 @@ let package = Package(
     targets: [
         .target(name: "FireSide", dependencies: [
             "FireSideModel",
+            .product(name: "SkipFirebaseMessaging", package: "skip-firebase"),
             .product(name: "SkipUI", package: "skip-ui")
         ], resources: [.process("Resources")], plugins: [.plugin(name: "skipstone", package: "skip")]),
         .testTarget(name: "FireSideTests", dependencies: [
@@ -34,8 +35,7 @@ let package = Package(
             .product(name: "SkipFoundation", package: "skip-foundation"),
             .product(name: "SkipModel", package: "skip-model"),
             .product(name: "SkipFirebaseFirestore", package: "skip-firebase"),
-            .product(name: "SkipFirebaseAuth", package: "skip-firebase"),
-            .product(name: "SkipFirebaseMessaging", package: "skip-firebase")
+            .product(name: "SkipFirebaseAuth", package: "skip-firebase")
         ], resources: [.process("Resources")], plugins: [.plugin(name: "skipstone", package: "skip")]),
         .testTarget(name: "FireSideModelTests", dependencies: [
             "FireSideModel",

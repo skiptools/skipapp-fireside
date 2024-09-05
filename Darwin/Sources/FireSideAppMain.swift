@@ -5,9 +5,12 @@ import FireSide
 
 /// The entry point to the app simply loads the App implementation from SPM module.
 @main struct AppMain: App, FireSideApp {
+    #if SKIP || !os(macOS)
     @UIApplicationDelegateAdaptor(FireSideAppDelegate.self) var appDelegate
+    #endif
 }
 
+#if SKIP || !os(macOS)
 /// iOS uses the app delegate to integrate push notifications.
 ///
 /// See Main.kt for the equivalent Android functionality.
@@ -27,3 +30,4 @@ public class FireSideAppDelegate : NSObject, UIApplicationDelegate {
         return true
     }
 }
+#endif

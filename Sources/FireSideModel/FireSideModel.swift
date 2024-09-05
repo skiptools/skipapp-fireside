@@ -19,9 +19,9 @@ public actor FireSideModel {
     private let firestore: Firestore
 
     /// Set the application's shared model to a configured instance before use.
-    public static var shared = try! FireSideModel()
+    public static var shared = FireSideModel()
 
-    public init() throws {
+    public init() {
         self.firestore = Firestore.firestore()
     }
 

@@ -14,10 +14,10 @@ import FireSide
 /// iOS uses the app delegate to integrate push notifications.
 ///
 /// See Main.kt for the equivalent Android functionality.
-public class FireSideAppDelegate : NSObject, UIApplicationDelegate {
+class FireSideAppDelegate : NSObject, UIApplicationDelegate {
     let notificationsDelegate = NotificationDelegate() // Defined in FireSideApp.swift
 
-    public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
 
         UNUserNotificationCenter.current().delegate = notificationsDelegate

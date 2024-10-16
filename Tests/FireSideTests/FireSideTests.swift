@@ -5,7 +5,6 @@ import Foundation
 
 let logger: Logger = Logger(subsystem: "FireSide", category: "Tests")
 
-// SKIP INSERT: @org.junit.runner.RunWith(androidx.test.ext.junit.runners.AndroidJUnit4::class)
 @available(macOS 13, *)
 final class FireSideTests: XCTestCase {
     func testFireSide() throws {

@@ -10,7 +10,6 @@ import SkipFirebaseCore
 
 let logger: Logger = Logger(subsystem: "FireSideModel", category: "Tests")
 
-// SKIP INSERT: @org.junit.runner.RunWith(androidx.test.ext.junit.runners.AndroidJUnit4::class)
 @available(macOS 13, *)
 final class FireSideModelTests: XCTestCase {
     // values from Darwin/GoogleService-Info.plist

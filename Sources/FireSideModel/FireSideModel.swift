@@ -1,6 +1,6 @@
-import SkipFoundation
-import OSLog
 import Observation
+import SkipFoundation
+import SkipFuse
 
 #if !SKIP
 import FirebaseCore
@@ -12,7 +12,7 @@ import SkipFirebaseFirestore
 
 let logger: Logger = Logger(subsystem: "fire.side", category: "FireSideModel")
 
-public actor FireSideModel {
+public struct FireSideModel {
     /// The global Firestore instance for the app, configured using the default
     /// `Android/app/google-services.json` and `Darwin/GoogleService-Info.plist` configuration files
     /// which can be downloaded for your project from https://console.firebase.google.com/project/

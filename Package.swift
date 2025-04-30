@@ -19,6 +19,7 @@ let package = Package(
         .package(url: "https://source.skip.tools/skip-ui.git", from: "1.7.0"),
         .package(url: "https://source.skip.tools/skip-foundation.git", from: "1.0.0"),
         .package(url: "https://source.skip.tools/skip-model.git", from: "1.0.0"),
+        .package(url: "https://source.skip.tools/skip-fuse.git", "0.0.0"..<"2.0.0"),
         .package(url: "https://source.skip.tools/skip-firebase.git", "0.4.0"..<"2.0.0")
     ],
     targets: [
@@ -32,10 +33,9 @@ let package = Package(
             .product(name: "SkipTest", package: "skip")
         ], resources: [.process("Resources")], plugins: [.plugin(name: "skipstone", package: "skip")]),
         .target(name: "FireSideModel", dependencies: [
-            .product(name: "SkipFoundation", package: "skip-foundation"),
             .product(name: "SkipModel", package: "skip-model"),
-            .product(name: "SkipFirebaseFirestore", package: "skip-firebase"),
-            .product(name: "SkipFirebaseAuth", package: "skip-firebase")
+            .product(name: "SkipFuse", package: "skip-fuse"),
+            .product(name: "SkipFirebaseFirestore", package: "skip-firebase")
         ], resources: [.process("Resources")], plugins: [.plugin(name: "skipstone", package: "skip")]),
         .testTarget(name: "FireSideModelTests", dependencies: [
             "FireSideModel",

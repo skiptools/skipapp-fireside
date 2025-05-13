@@ -1,9 +1,9 @@
 # FireSide
 
-This is a [Skip](https://skip.tools) dual-platform app project.
+This is a [Skip Lite](https://skip.tools) dual-platform app project.
 It creates a native app for both iOS and Android.
 
-This app shows Skip's integration with the Firebase backend
+This app shows Skip Lite's integration with the Firebase backend
 cloud computing services
 using the official native Firebase SDKs for iOS and Android.
 It utilizes the

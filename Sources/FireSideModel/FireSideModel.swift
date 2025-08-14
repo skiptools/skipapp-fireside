@@ -30,7 +30,7 @@ public actor FireSideModel {
     }
 
     @MainActor public func watchMessageList() async throws -> MessageList {
-        return MessageList(firestore.collection("messages"))
+        return await MessageList(firestore.collection("messages"))
     }
 
     /// "Sends" a message by adding it to the document

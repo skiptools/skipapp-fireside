@@ -38,6 +38,11 @@ public struct ContentView: View {
                 logger.error("error getting message list: \(error)")
             }
         }
+        .task {
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            let authorizationStatus = settings.authorizationStatus
+            logger.info("notification authorization status: \(authorizationStatus.rawValue)")
+        }
         // Used when sending "deeplink" key in notifications: fireside://tab/<tab>
         .onOpenURL { url in
             if url.host() == "tab" {

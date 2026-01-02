@@ -39,9 +39,11 @@ public struct ContentView: View {
             }
         }
         .task {
+            #if os(iOS) || os(Android) // UNUserNotificationCenter unavailable on macOS
             let settings = await UNUserNotificationCenter.current().notificationSettings()
             let authorizationStatus = settings.authorizationStatus
             logger.info("notification authorization status: \(authorizationStatus.rawValue)")
+            #endif
         }
         // Used when sending "deeplink" key in notifications: fireside://tab/<tab>
         .onOpenURL { url in

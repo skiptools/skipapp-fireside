@@ -1,5 +1,10 @@
 import SwiftUI
 import FireSideModel
+#if SKIP
+import SkipFirebaseAnalytics
+#else
+import FirebaseAnalytics
+#endif
 
 public struct ContentView: View {
     @AppStorage("setting") var setting = true
@@ -18,6 +23,7 @@ public struct ContentView: View {
                     SendMessageBar(messageList: $messageList)
                 }
             }
+            .analyticsScreen(name: "messages_screen", class: "MessagesScreen")
             .tag(0)
             .tabItem { Label("Messages", systemImage: "list.bullet") }
 
@@ -27,6 +33,7 @@ public struct ContentView: View {
                 }
                 .navigationTitle("Settings")
             }
+            .analyticsScreen(name: "settings_screen", class: "SettingsScreen")
             .tag(1)
             .tabItem { Label("Settings", systemImage: "gearshape.fill") }
         }
@@ -43,12 +50,18 @@ public struct ContentView: View {
             let settings = await UNUserNotificationCenter.current().notificationSettings()
             let authorizationStatus = settings.authorizationStatus
             logger.info("notification authorization status: \(authorizationStatus.rawValue)")
+            Analytics.logEvent("notification_permission_result", parameters: [
+                "authorization_status": authorizationStatus.rawValue
+            ])
             #endif
         }
         // Used when sending "deeplink" key in notifications: fireside://tab/<tab>
         .onOpenURL { url in
             if url.host() == "tab" {
                 selectedTab = url.path() == "/settings" ? 1 : 0
+                Analytics.logEvent("open_deeplink", parameters: [
+                    "target_tab": selectedTab == 1 ? "settings" : "messages"
+                ])
             }
         }
     }
@@ -91,6 +104,7 @@ struct SendMessageBar : View {
 
     func sendMessage(_ message: String) async {
         logger.log("sendMessage: \(message)")
+        Analytics.logEvent("send_message", parameters: ["message_length": message.count])
         do {
             let msg = try await FireSideModel.shared.sendMessage(message)
             logger.error("sent message: \(msg)")
@@ -153,12 +167,18 @@ struct MessagesListView : View {
 
                 }
                 .navigationTitle("Message")
+                .analyticsScreen(name: "message_detail_screen",
+                                 class: "MessageDetailScreen",
+                                 extraParameters: [
+                                    AnalyticsParameterItemID: msg.id ?? "unknown"
+                                 ])
             }
         }
     }
 
     func deleteMessages(_ indices: IndexSet) async {
         logger.log("deleteMessages: \(indices)")
+        Analytics.logEvent("delete_messages", parameters: ["message_count": indices.count])
         do {
             if let messages = self.messageList?.messages {
                 let ids = indices.compactMap({ messages[$0].id })
@@ -229,9 +249,11 @@ struct JoinChatView : View {
             self.lastError = nil // clear the most recent error
             if chatKey.count == chatKeyCount {
                 logger.log("joinChat: \(chatKey)")
+                Analytics.logEvent("join_chat", parameters: ["chat_key_present": true])
                 try await FireSideModel.shared.joinChat(chatKey: chatKey)
             } else {
                 logger.log("startNewChat")
+                Analytics.logEvent("start_new_chat", parameters: ["chat_key_present": false])
                 chatKey = try await FireSideModel.shared.startNewChat()
             }
         } catch {
@@ -240,3 +262,4 @@ struct JoinChatView : View {
         }
     }
 }
+

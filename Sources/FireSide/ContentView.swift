@@ -2,8 +2,10 @@ import SwiftUI
 import FireSideModel
 #if SKIP
 import SkipFirebaseAnalytics
+import SkipFirebaseCrashlytics
 #else
 import FirebaseAnalytics
+import FirebaseCrashlytics
 #endif
 
 public struct ContentView: View {
@@ -30,6 +32,25 @@ public struct ContentView: View {
             NavigationStack {
                 Form {
                     Toggle("Option", isOn: $setting)
+                    Section("Crashlytics") {
+                        Button("Report Error") {
+                            let error = NSError(
+                                domain: "skip.fireside.debug",
+                                code: 1001,
+                                userInfo: [
+                                    NSLocalizedDescriptionKey: "Crashlytics test non-fatal error",
+                                    NSLocalizedFailureReasonErrorKey: "Triggered by Report Error button",
+                                    "view": "Settings"
+                                ]
+                            )
+                            Crashlytics.crashlytics().record(error: error)
+                        }
+
+                        Button("Test Crash") {
+                            fatalError("Crash was triggered")
+                        }
+                        .foregroundStyle(.red)
+                    }
                 }
                 .navigationTitle("Settings")
             }

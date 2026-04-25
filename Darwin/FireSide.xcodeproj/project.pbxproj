@@ -107,6 +107,7 @@
 				499CD43E2AC5B799001AE8D8 /* Resources */,
 				499CD4452AC5B869001AE8D8 /* Run skip gradle */,
 				499CD44A2AC5B9C6001AE8D8 /* Embed Frameworks */,
+				49C1A0F72DCC100100A1B2C3 /* Firebase Crashlytics dSYM upload */,
 			);
 			buildRules = (
 			);
@@ -182,6 +183,29 @@
 			shellPath = "/bin/sh -e";
 			shellScript = "if [ \"${SKIP_ZERO}\" != \"\" ]; then\n\techo \"note: skipping skip due to SKIP_ZERO\"\n\texit 0\nfi\nif [ \"${ENABLE_PREVIEWS}\" == \"YES\" ]; then\n\techo \"note: skipping skip due to ENABLE_PREVIEWS\"\n\texit 0\nfi\nif [ \"${ACTION}\" = \"install\" ]; then\n\tSKIP_ACTION=\"build\"\nelse\n\tSKIP_ACTION=\"${SKIP_ACTION:-launch}\"\nfi\nPATH=${BUILD_ROOT}/Release:${BUILD_ROOT}/Debug:${BUILD_ROOT}/../../SourcePackages/artifacts/skip/skip/skip.artifactbundle/macos:${PATH}:${HOMEBREW_PREFIX:-/opt/homebrew}/bin\necho \"note: running gradle build with: $(which skip) gradle -p ${PWD}/../Android ${SKIP_ACTION:-launch}${CONFIGURATION:-Debug}\"\nskip gradle -p ../Android ${SKIP_ACTION:-launch}${CONFIGURATION:-Debug}\n";
 		};
+		49C1A0F72DCC100100A1B2C3 /* Firebase Crashlytics dSYM upload */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = "Firebase Crashlytics dSYM upload";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -218,6 +242,7 @@
 		491FCC8F2AD18D38002FB1E1 /* Skippy */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "FireSide-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -236,6 +261,7 @@
 		499CD4422AC5B799001AE8D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "FireSide-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -254,6 +280,7 @@
 		499CD4432AC5B799001AE8D8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = "FireSide-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;

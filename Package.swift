@@ -26,6 +26,7 @@ let package = Package(
             "FireSideModel",
             .product(name: "SkipFirebaseMessaging", package: "skip-firebase"),
             .product(name: "SkipFirebaseAnalytics", package: "skip-firebase"),
+            .product(name: "SkipFirebaseCrashlytics", package: "skip-firebase"),
             .product(name: "SkipUI", package: "skip-ui")
         ], resources: [.process("Resources")], plugins: [.plugin(name: "skipstone", package: "skip")]),
         .testTarget(name: "FireSideTests", dependencies: [

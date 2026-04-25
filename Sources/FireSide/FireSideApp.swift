@@ -4,9 +4,11 @@ import OSLog
 import SwiftUI
 #if SKIP
 import SkipFirebaseAnalytics
+import SkipFirebaseCrashlytics
 import SkipFirebaseMessaging
 #else
 import FirebaseAnalytics
+import FirebaseCrashlytics
 import FirebaseMessaging
 #endif
 
@@ -30,6 +32,7 @@ public struct RootView : View {
                     "platform": analyticsPlatformName
                 ])
                 Analytics.setUserProperty(analyticsPlatformName, forName: "platform")
+                Crashlytics.crashlytics().log("FireSide launched on \(analyticsPlatformName)")
                 logger.log("Welcome to Skip on \(androidSDK != nil ? "Android" : "Darwin")!")
                 logger.warning("Skip app logs are viewable in the Xcode console for iOS; Android logs can be viewed in Studio or using adb logcat")
             }

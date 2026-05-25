@@ -24,6 +24,7 @@ To get started:
 
 1. Install skip (requires macOS 13+ with [Homebrew](https://brew.sh), [Xcode](https://developer.apple.com/xcode/), and [Android Studio](https://developer.android.com/studio)):
 ```
+$ brew tap skiptools/skip
 $ brew install skiptools/skip/skip
 ```
 2. Configure and launch an Android emulator from the [Android Studio device manager](https://developer.android.com/studio/run/emulator-launch-without-app), or by launching a pre-existing emulator:

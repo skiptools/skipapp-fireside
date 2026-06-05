@@ -1,11 +1,7 @@
 import XCTest
 import OSLog
 import Foundation
-#if !SKIP
-import FirebaseCore
-#else
 import SkipFirebaseCore
-#endif
 @testable import FireSideModel
 
 let logger: Logger = Logger(subsystem: "FireSideModel", category: "Tests")

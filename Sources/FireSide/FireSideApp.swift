@@ -2,11 +2,7 @@ import FireSideModel
 import Foundation
 import OSLog
 import SwiftUI
-#if SKIP
-import SkipFirebaseMessaging
-#else
-import FirebaseMessaging
-#endif
+@preconcurrency import SkipFirebaseMessaging
 
 let logger: Logger = Logger(subsystem: "skip.fireside.App", category: "FireSide")
 
@@ -32,7 +28,7 @@ public struct RootView : View {
 /// Shared delegate for responding to notifications.
 ///
 /// See FireSideAppMain for iOS setup, Main.kt for Android setup.
-public class NotificationDelegate : NSObject, UNUserNotificationCenterDelegate, MessagingDelegate {
+public final class NotificationDelegate : NSObject, @preconcurrency UNUserNotificationCenterDelegate, MessagingDelegate, Sendable {
     public func requestPermission() {
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
         Task { @MainActor in

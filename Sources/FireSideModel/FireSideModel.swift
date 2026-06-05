@@ -2,13 +2,7 @@ import Foundation
 import OSLog
 import Observation
 
-#if !SKIP
-import FirebaseCore
-import FirebaseFirestore
-#else
-import SkipFirebaseCore
-import SkipFirebaseFirestore
-#endif
+@preconcurrency import SkipFirebaseFirestore
 
 let logger: Logger = Logger(subsystem: "fire.side", category: "FireSideModel")
 
@@ -19,7 +13,7 @@ public actor FireSideModel {
     private let firestore: Firestore
 
     /// Set the application's shared model to a configured instance before use.
-    public static var shared = FireSideModel()
+    public static let shared = FireSideModel()
 
     public init() {
         self.firestore = Firestore.firestore()

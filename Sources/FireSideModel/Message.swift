@@ -1,13 +1,7 @@
 import Foundation
 import Observation
 
-#if !SKIP
-import FirebaseCore
-import FirebaseFirestore
-#else
-import SkipFirebaseCore
 import SkipFirebaseFirestore
-#endif
 
 /// A live list of all the messages, updated using a Firestore snapshot listenr on the "messages" collection.
 @Observable public class MessageList {

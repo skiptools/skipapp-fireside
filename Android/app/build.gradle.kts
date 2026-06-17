@@ -7,6 +7,7 @@ plugins {
 
     // this plugin is needed in order to process the google-services.json file
     id("com.google.gms.google-services") version "4.4.2" apply true
+    id("com.google.firebase.crashlytics") version "3.0.7" apply true
 }
 
 skip {

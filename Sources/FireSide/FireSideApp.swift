@@ -3,8 +3,12 @@ import Foundation
 import OSLog
 import SwiftUI
 #if SKIP
+import SkipFirebaseAnalytics
+import SkipFirebaseCrashlytics
 import SkipFirebaseMessaging
 #else
+import FirebaseAnalytics
+import FirebaseCrashlytics
 import FirebaseMessaging
 #endif
 
@@ -12,6 +16,7 @@ let logger: Logger = Logger(subsystem: "skip.fireside.App", category: "FireSide"
 
 /// The Android SDK number we are running against, or `nil` if not running on Android
 let androidSDK = ProcessInfo.processInfo.environment["android.os.Build.VERSION.SDK_INT"].flatMap({ Int($0) })
+let analyticsPlatformName = androidSDK != nil ? "android" : "ios"
 
 /// The shared top-level view for the app, loaded from the platform-specific App delegates below.
 ///
@@ -23,6 +28,11 @@ public struct RootView : View {
     public var body: some View {
         ContentView()
             .task {
+                Analytics.setDefaultEventParameters([
+                    "platform": analyticsPlatformName
+                ])
+                Analytics.setUserProperty(analyticsPlatformName, forName: "platform")
+                Crashlytics.crashlytics().log("FireSide launched on \(analyticsPlatformName)")
                 logger.log("Welcome to Skip on \(androidSDK != nil ? "Android" : "Darwin")!")
                 logger.warning("Skip app logs are viewable in the Xcode console for iOS; Android logs can be viewed in Studio or using adb logcat")
             }
